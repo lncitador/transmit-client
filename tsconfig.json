@@ -2,7 +2,7 @@
   "extends": "@adonisjs/tsconfig/tsconfig.package.json",
   "compilerOptions": {
     "target": "ES2015",
-    "lib": ["ES2015", "DOM"],
+    "lib": ["ES2015", "DOM"]
   },
   "include": ["./**/*"]
 }
