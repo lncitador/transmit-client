@@ -81,7 +81,8 @@
     "target": "es2020",
     "outDir": "build",
     "entry": [
-      "index.ts"
+      "index.ts",
+      "src/use/vue/index.ts"
     ]
   },
   "release-it": {
