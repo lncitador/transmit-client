@@ -43,7 +43,7 @@ AdonisJS Transmit Client is a client for the native Server-Sent-Event (SSE) modu
   - [Vue.js](#vuejs)
     - [Integration with Inertia.js](#integration-with-inertiajs)
     - [Using the Composition API](#using-the-composition-api)
-    - [Coming Soon](#coming-soon)
+  - [Coming Soon](#coming-soon)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -265,7 +265,7 @@ const {
 </template>
 ```
 
-### Coming Soon
+## Coming Soon
 
 Support for React and Svelte frameworks is currently in development.
 
