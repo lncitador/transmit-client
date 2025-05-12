@@ -31,7 +31,6 @@ AdonisJS Transmit Client is a client for the native Server-Sent-Event (SSE) modu
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Table of Contents
 
   - [Installation](#installation)
   - [Usage](#usage)
@@ -40,6 +39,11 @@ AdonisJS Transmit Client is a client for the native Server-Sent-Event (SSE) modu
     - [Subscription Request](#subscription-request)
     - [Reconnecting](#reconnecting)
 - [Events](#events)
+- [Framework Integration](#framework-integration)
+  - [Vue.js](#vuejs)
+    - [Integration with Inertia.js](#integration-with-inertiajs)
+    - [Using the Composition API](#using-the-composition-api)
+    - [Coming Soon](#coming-soon)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -151,7 +155,7 @@ const transmit = new Transmit({
 
 The`Transmit` class uses the [`EventTarget`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget) class to emits multiple events.
 
-  ```ts
+```ts
 transmit.on('connected', () => {
   console.log('connected')
 })
@@ -165,17 +169,113 @@ transmit.on('reconnecting', () => {
 })
 ```
 
-[gh-workflow-image]: https://img.shields.io/github/actions/workflow/status/adonisjs/transmit-client/test?style=for-the-badge
-[gh-workflow-url]: https://github.com/adonisjs/transmit-client/actions/workflows/test.yml "Github action"
+# Framework Integration
 
+Integrates seamlessly with any framework. For users of `@adonisjs/inertia`, it serves as an effective broadcast client that works with Inertia across various web frameworks.
+
+## Vue.js
+
+Set up your Vue.js application to use the `TransmitPlugin` as follows:
+
+```ts
+import { createApp } from 'vue'
+import { TransmitPlugin } from '@adonisjs/transmit-client/use/vue'
+import App from './App.vue'
+
+const app = createApp(App)
+
+app.use(TransmitPlugin, {
+  baseUrl: 'http://localhost:3333',
+  // Optional configuration
+  maxReconnectAttempts: 5,
+  onReconnectAttempt: (attempt) => console.log(`Reconnection attempt: ${attempt}`),
+})
+
+app.mount('#app')
+```
+
+### Integration with Inertia.js
+
+If you are using Inertia.js with Vue, you can integrate the `TransmitPlugin` as follows:
+
+```ts
+// inertia/app/app.ts
+import { TransmitPlugin } from '@adonisjs/transmit-client/use/vue'
+
+// rest of the imports and setup
+
+createInertiaApp({
+  // Add your Inertia app configuration here
+  setup({ el, App, props, plugin }) {
+    
+    createSSRApp({ render: () => h(App, props) })
+      .use(plugin)
+      .use(TransmitPlugin, {
+        baseUrl: 'http://localhost:3333',
+        // Optional configuration
+        maxReconnectAttempts: 5,
+        onReconnectAttempt: (attempt) => console.log(`Reconnection attempt: ${attempt}`),
+      })
+      .mount(el)
+  },
+})
+```
+### Using the Composition API
+
+The `useTransmit` hook provides a reactive interface to Transmit subscriptions:
+
+```vue
+<script setup>
+import { useTransmit } from '@adonisjs/transmit-client/use/vue'
+import { ref } from 'vue'
+
+const roomId = ref('general')
+const messages = ref([])
+
+// The subscription automatically handles connection state
+const { 
+  isConnected, 
+  error, 
+  data, 
+  close, 
+  reconnect 
+} = useTransmit(() => `chat/${roomId.value}`, {
+  enabled: true,
+  onMessage: (message) => {
+    messages.value.push(message)
+  },
+  onError: (err) => {
+    console.error('Subscription error:', err)
+  }
+})
+</script>
+
+<template>
+  <div>
+    <div v-if="isConnected">Connected to channel</div>
+    <div v-else>Disconnected</div>
+
+    <div v-if="error">Error: {{ error }}</div>
+
+    <div v-if="data.lastMessage">Latest message: {{ data.lastMessage }}</div>
+
+    <button @click="reconnect">Reconnect</button>
+    <button @click="close">Disconnect</button>
+  </div>
+</template>
+```
+
+### Coming Soon
+
+Support for React and Svelte frameworks is currently in development.
+
+[gh-workflow-image]: https://img.shields.io/github/actions/workflow/status/adonisjs/transmit-client/test?style=for-the-badge
+[gh-workflow-url]: https://github.com/adonisjs/transmit-client/actions/workflows/test.yml 'Github action'
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
 [typescript-url]: "typescript"
-
 [npm-image]: https://img.shields.io/npm/v/@adonisjs/transmit-client.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/@adonisjs/transmit-client 'npm'
-
 [license-image]: https://img.shields.io/npm/l/@adonisjs/transmit-client?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md 'license'
-
 [synk-image]: https://img.shields.io/snyk/vulnerabilities/github/adonisjs/transmit-client?label=Synk%20Vulnerabilities&style=for-the-badge
-[synk-url]: https://snyk.io/test/github/adonisjs/transmit-client?targetFile=package.json "synk"
+[synk-url]: https://snyk.io/test/github/adonisjs/transmit-client?targetFile=package.json 'synk'
