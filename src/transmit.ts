@@ -13,7 +13,7 @@ import { TransmitStatus } from './transmit_status.js'
 import { Hook } from './hook.js'
 import { HookEvent } from './hook_event.js'
 
-interface TransmitOptions {
+export interface TransmitOptions {
   baseUrl: string
   uidGenerator?: () => string
   eventSourceFactory?: (url: string | URL, options: { withCredentials: boolean }) => EventSource
