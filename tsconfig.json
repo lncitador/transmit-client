@@ -1,6 +1,7 @@
 {
   "extends": "@adonisjs/tsconfig/tsconfig.package.json",
   "compilerOptions": {
+    "jsx": "preserve",
     "target": "ES2015",
     "lib": ["ES2015", "DOM"]
   },
